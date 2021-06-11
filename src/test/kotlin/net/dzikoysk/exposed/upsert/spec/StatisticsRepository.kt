@@ -28,8 +28,6 @@
 package net.dzikoysk.exposed.upsert.spec
 
 import net.dzikoysk.exposed.upsert.upsert
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -38,65 +36,51 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-internal object StatisticsTable : IntIdTable("statistics") {
+internal class StatisticsRepository {
 
-    val type: Column<String> = varchar("type", 32)
-    val identifier: Column<String> = varchar("identifier", 32)
-    val count: Column<Long> = long("count")
-
-    init {
-        index("index_type", columns = arrayOf(type))
-        uniqueIndex("unique_type_identifier", type, identifier)
+    internal fun createSchema() {
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(StatisticsTable)
+        }
     }
 
-}
+    internal fun upsertRecord(record: Record): Record =
+        transaction {
+            addLogger(StdOutSqlLogger)
 
-internal fun createSchema() {
-    transaction {
-        addLogger(StdOutSqlLogger)
-        SchemaUtils.create(StatisticsTable)
-    }
-}
-
-internal data class Record(
-    val id: Long = -1,
-    val type: String,
-    val identifier: String,
-    val count: Long
-) {
-
-    override fun toString() = "$id | $type | $identifier | $count"
-
-}
-
-internal fun upsertRecord(record: Record): Record =
-    transaction {
-        addLogger(StdOutSqlLogger)
-
-        StatisticsTable.upsert(StatisticsTable.id,
-            bodyInsert = {
-                it[this.type] = record.type
-                it[this.identifier] = record.identifier
-                it[this.count] = record.count
-            },
-            bodyUpdate = {
-                with(SqlExpressionBuilder) {
-                    it.update(StatisticsTable.count, StatisticsTable.count + 4)
+            StatisticsTable.upsert(StatisticsTable.id,
+                bodyInsert = {
+                    it[this.type] = record.type
+                    it[this.value] = record.value
+                    it[this.count] = record.count
+                },
+                bodyUpdate = {
+                    with(SqlExpressionBuilder) {
+                        it.update(StatisticsTable.count, StatisticsTable.count + record.count)
+                    }
                 }
-            }
+            )
+
+            StatisticsTable.select(Op.build { StatisticsTable.type eq record.type }.and { StatisticsTable.value eq record.value })
+                .first()
+                .let { toRecord(it) }
+        }
+
+    internal fun findAll(): Collection<Record> =
+        transaction {
+            StatisticsTable.selectAll().map { toRecord(it) }
+        }
+
+    private fun toRecord(row: ResultRow): Record =
+        Record(
+            id = row[StatisticsTable.id].value.toLong(),
+            type = row[StatisticsTable.type],
+            value = row[StatisticsTable.value],
+            count = row[StatisticsTable.count]
         )
 
-        StatisticsTable.select(Op.build { StatisticsTable.type eq record.type }.and { StatisticsTable.identifier eq record.identifier })
-            .first()
-            .let { toRecord(it) }
-    }
-
-private fun toRecord(row: ResultRow): Record =
-    Record(
-        id = row[StatisticsTable.id].value.toLong(),
-        type = row[StatisticsTable.type],
-        identifier = row[StatisticsTable.identifier],
-        count = row[StatisticsTable.count]
-    )
+}

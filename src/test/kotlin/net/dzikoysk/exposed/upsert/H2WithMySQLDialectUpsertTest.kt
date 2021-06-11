@@ -30,32 +30,13 @@ package net.dzikoysk.exposed.upsert
 import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
 import org.jetbrains.exposed.sql.Database
 import org.junit.jupiter.api.BeforeEach
-import org.testcontainers.containers.MySQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
-@Testcontainers
-internal class MySQLUpsertTest : UpsertSpecification() {
-
-    private class SpecifiedMySQLContainer(image: String) : MySQLContainer<SpecifiedMySQLContainer>(DockerImageName.parse(image))
-
-    companion object {
-        @Container
-        private val MYSQL_CONTAINER = SpecifiedMySQLContainer("mysql:8.0.25")
-    }
+internal class H2WithMySQLDialectUpsertTest : UpsertSpecification() {
 
     @BeforeEach
     fun connect() {
-        println(MYSQL_CONTAINER.jdbcUrl)
-        Database.connect(MYSQL_CONTAINER.jdbcUrl, driver = "com.mysql.cj.jdbc.Driver", user = "test", password = "test")
-    }
-
-    @Test
-    fun `should launch database`() {
-       assertTrue { MYSQL_CONTAINER.isRunning }
+        Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;mode=MySQL", driver = "org.h2.Driver")
     }
 
     @Test

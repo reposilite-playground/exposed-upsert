@@ -25,5 +25,37 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-package net.dzikoysk.exposed.upsert
+package net.dzikoysk.exposed.upsert.spec
 
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Column
+
+internal object StatisticsTable : IntIdTable("statistics") {
+
+    val type: Column<String> = varchar("type", 32)
+    val value: Column<String> = varchar("value", 512)
+    val count: Column<Long> = long("count")
+
+    init {
+        index("index_type", columns = arrayOf(type))
+        uniqueIndex("unique_type_value", type, value)
+    }
+
+}
+
+/*
+   Entity wit:h
+   * Primary key on 'id'
+   * Unique index on ('type', 'value') pair
+   * Count to upsert
+ */
+internal data class Record(
+    val id: Long = -1,
+    val type: String,
+    val value: String,
+    val count: Long
+) {
+
+    override fun toString() = "$id | $type | $value | $count"
+
+}

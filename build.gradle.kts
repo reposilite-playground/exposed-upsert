@@ -19,8 +19,12 @@ dependencies {
     testImplementation("com.h2database:h2:1.4.199")
 
     testImplementation("mysql:mysql-connector-java:8.0.25")
+    testImplementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
 
     val testcontainers = "1.15.3"
+    testImplementation("org.testcontainers:postgresql:$testcontainers")
+    testImplementation("org.testcontainers:oracle-xe:$testcontainers")
+    testImplementation("org.testcontainers:mariadb:$testcontainers")
     testImplementation("org.testcontainers:mysql:$testcontainers")
     testImplementation("org.testcontainers:testcontainers:$testcontainers")
     testImplementation("org.testcontainers:junit-jupiter:$testcontainers")

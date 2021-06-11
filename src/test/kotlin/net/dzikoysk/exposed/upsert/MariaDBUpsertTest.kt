@@ -27,3 +27,40 @@
 
 package net.dzikoysk.exposed.upsert
 
+import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
+import org.jetbrains.exposed.sql.Database
+import org.junit.jupiter.api.BeforeEach
+import org.testcontainers.containers.MariaDBContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
+@Testcontainers
+internal class MariaDBUpsertTest : UpsertSpecification() {
+
+    private class SpecifiedMariaDBContainer(image: String) : MariaDBContainer<SpecifiedMariaDBContainer>(DockerImageName.parse(image))
+
+    companion object {
+        @Container
+        private val MARIADB_CONTAINER = SpecifiedMariaDBContainer("mariadb:10.6.1")
+    }
+
+    @BeforeEach
+    fun connect() {
+        println(MARIADB_CONTAINER.jdbcUrl)
+        Database.connect(MARIADB_CONTAINER.jdbcUrl, driver = "com.mysql.cj.jdbc.Driver", user = "test", password = "test")
+    }
+
+    @Test
+    fun `should launch database`() {
+        assertTrue { MARIADB_CONTAINER.isRunning }
+    }
+
+    @Test
+    fun `should run upsert spec`() {
+        super.shouldUpsertRecords()
+    }
+
+}

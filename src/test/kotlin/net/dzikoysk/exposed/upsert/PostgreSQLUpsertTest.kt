@@ -27,5 +27,5 @@
 
 package net.dzikoysk.exposed.upsert
 
-class PostgreSQLUpsertTest {
+internal class PostgreSQLUpsertTest {
 }

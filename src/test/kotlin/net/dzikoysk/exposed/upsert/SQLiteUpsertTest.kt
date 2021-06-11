@@ -27,3 +27,6 @@
 
 package net.dzikoysk.exposed.upsert
 
+internal class SQLiteUpsertTest {
+
+}

@@ -31,15 +31,28 @@ import kotlin.test.assertEquals
 
 internal open class UpsertSpecification {
 
+    private val statisticsRepository = StatisticsRepository()
 
-//    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;mode=MySQL", driver = "org.h2.Driver")
+    internal fun shouldUpsertRecords() {
+        statisticsRepository.createSchema()
 
-    internal fun upsertTest() {
-        createSchema()
+        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "type", "xyz", 3)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(-1, "type", "xyz-xyz", 30)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "type-type", "xyz-xyz", 300)).id)
 
-        assertEquals(1, upsertRecord(Record(-1, "type", "xyz", 3)).id)
-        assertEquals(2, upsertRecord(Record(-1, "type", "xyz-xyz", 3)).id)
-        assertEquals(3, upsertRecord(Record(-1, "type", "xyz-xyz-xyz", 3)).id)
+        statisticsRepository.findAll().forEach { println(it) }
+
+        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "type", "xyz", 1)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(2, "type", "xyz-xyz", 10)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "type-type", "xyz-xyz", 100)).id)
+
+        statisticsRepository.findAll().forEach { println(it) }
+
+        assertEquals(4, statisticsRepository.upsertRecord(Record(1, "type", "xyz", 0)).count)
+        assertEquals(40, statisticsRepository.upsertRecord(Record(2, "type", "xyz-xyz", 0)).count)
+        assertEquals(400, statisticsRepository.upsertRecord(Record(3, "type-type", "xyz-xyz", 0)).count)
+
+        statisticsRepository.findAll().forEach { println(it) }
     }
 
 }
