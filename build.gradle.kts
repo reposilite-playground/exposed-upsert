@@ -28,7 +28,6 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.34.0")
     testImplementation("mysql:mysql-connector-java:8.0.25")
     testImplementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
-    testImplementation("com.oracle.database.jdbc:ojdbc8:21.1.0.0")
     testImplementation("org.postgresql:postgresql:42.2.21")
 
     val testcontainers = "1.15.3"
