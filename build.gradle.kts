@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.*
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 group = "net.dzikoysk"
 version = "1.0.0"
@@ -10,7 +12,7 @@ plugins {
 }
 
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
 }
 
 repositories {
@@ -52,6 +54,13 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Test> {
+    testLogging {
+        events(STARTED, PASSED, FAILED, SKIPPED)
+        exceptionFormat = FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
     useJUnitPlatform()
 }
 
@@ -77,31 +86,21 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.30".toBigDecimal()
+                minimum = "0.10".toBigDecimal()
             }
         }
-
         rule {
             enabled = true
             element = "CLASS"
-
             limit {
                 counter = "BRANCH"
                 value = "COVEREDRATIO"
-                minimum = "0.90".toBigDecimal()
+                minimum = "0.0".toBigDecimal()
             }
-
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "0.80".toBigDecimal()
-            }
-
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = "200".toBigDecimal()
-//              maximum = "8".toBigDecimal()
+                minimum = "0.0".toBigDecimal()
             }
             excludes = listOf()
         }
