@@ -1,4 +1,4 @@
-# Exposed Upsert [![CI](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml/badge.svg)](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml)
+# Exposed Upsert [![CI](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml/badge.svg)](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml) [![codecov](https://codecov.io/gh/dzikoysk/exposed-upsert/branch/main/graph/badge.svg?token=dIBANIssGf)](https://codecov.io/gh/dzikoysk/exposed-upsert)
 Upsert dsl extension for Exposed, Kotlin SQL framework 
 
 ## Coverage
