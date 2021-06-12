@@ -27,6 +27,8 @@
 
 package net.dzikoysk.exposed.upsert.spec
 
+import net.dzikoysk.exposed.upsert.withIndex
+import net.dzikoysk.exposed.upsert.withUnique
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 
@@ -36,10 +38,8 @@ internal object StatisticsTable : IntIdTable("statistics") {
     val value: Column<String> = varchar("value", 512)
     val count: Column<Long> = long("count")
 
-    init {
-        index("index_type", columns = arrayOf(type))
-        uniqueIndex("unique_type_value", type, value)
-    }
+    val typeIndex = withIndex("index_type", columns = arrayOf(type))
+    val uniqueTypeValue = withUnique("unique_type_value", type, value)
 
 }
 

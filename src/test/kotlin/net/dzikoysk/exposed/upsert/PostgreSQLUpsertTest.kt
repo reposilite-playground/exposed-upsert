@@ -27,5 +27,40 @@
 
 package net.dzikoysk.exposed.upsert
 
-internal class PostgreSQLUpsertTest {
+import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
+import org.jetbrains.exposed.sql.Database
+import org.junit.jupiter.api.BeforeEach
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
+@Testcontainers
+internal class PostgreSQLUpsertTest : UpsertSpecification() {
+
+    private class SpecifiedPostgreSQLContainer(image: String) : PostgreSQLContainer<SpecifiedPostgreSQLContainer>(DockerImageName.parse(image))
+
+    companion object {
+        @Container
+        private val POSTGRESQL_CONTAINER = SpecifiedPostgreSQLContainer("postgres:11.12")
+    }
+
+    @BeforeEach
+    fun connect() {
+        println(POSTGRESQL_CONTAINER.jdbcUrl)
+        Database.connect(POSTGRESQL_CONTAINER.jdbcUrl, driver = "org.postgresql.Driver", user = "test", password = "test")
+    }
+
+    @Test
+    fun `should launch database`() {
+        assertTrue { POSTGRESQL_CONTAINER.isRunning }
+    }
+
+    @Test
+    fun `should run upsert spec`() {
+        super.shouldUpsertRecords()
+    }
+
 }

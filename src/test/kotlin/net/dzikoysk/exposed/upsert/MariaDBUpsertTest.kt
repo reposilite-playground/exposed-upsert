@@ -50,7 +50,7 @@ internal class MariaDBUpsertTest : UpsertSpecification() {
     @BeforeEach
     fun connect() {
         println(MARIADB_CONTAINER.jdbcUrl)
-        Database.connect(MARIADB_CONTAINER.jdbcUrl, driver = "com.mysql.cj.jdbc.Driver", user = "test", password = "test")
+        Database.connect(MARIADB_CONTAINER.jdbcUrl, driver = "org.mariadb.jdbc.Driver", user = "test", password = "test")
     }
 
     @Test

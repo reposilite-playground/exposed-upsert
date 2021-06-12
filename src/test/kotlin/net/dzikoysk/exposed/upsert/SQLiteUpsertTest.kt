@@ -27,6 +27,29 @@
 
 package net.dzikoysk.exposed.upsert
 
-internal class SQLiteUpsertTest {
+import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.io.TempDir
+import java.io.File
+import java.sql.Connection
+import kotlin.test.Test
+
+internal class SQLiteUpsertTest : UpsertSpecification() {
+
+    @TempDir
+    lateinit var temporaryDirectory: File
+
+    @BeforeEach
+    fun connect() {
+        Database.connect("jdbc:sqlite:${temporaryDirectory.resolve("test.db").absolutePath}", driver = "org.sqlite.JDBC")
+        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+    }
+
+    @Test
+    fun `should run upsert spec`() {
+        super.shouldUpsertRecords()
+    }
 
 }

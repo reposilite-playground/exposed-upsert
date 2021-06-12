@@ -56,40 +56,63 @@ internal class UpsertStatement<Key : Any>(
             return@buildString
         }
 
-        val dialect = transaction.db.vendor
-
-        if (dialect == "postgresql") {
-            if (index) {
-                append(" ON CONFLICT ON CONSTRAINT ")
-                append(indexName)
-            }
-            else {
-                append(" ON CONFLICT(")
-                append(indexName)
-                append(")")
-            }
-
-            append(" DO UPDATE SET ")
-            updateValues.keys
-                .filter { it !in indexColumns }
-                .joinTo(this) { "${transaction.identity(it)}=EXCLUDED.${transaction.identity(it)}" }
-        }
-        else {
-            append(" ON DUPLICATE KEY UPDATE ")
-            updateValues.entries
-                .filter { it.key !in indexColumns }
-                .joinTo(this) { (column, value) ->
-                    val queryBuilder = QueryBuilder(true)
-
-                    when (value) {
-                        is Expression<*> -> {
-                            value.toQueryBuilder(queryBuilder)
-                            "${transaction.identity(column)}=${queryBuilder}"
-                        }
-                        else -> "${transaction.identity(column)}=VALUES(${transaction.identity(column)})"
-                    }
+        val upsert = when (val dialect = transaction.db.vendor) {
+            "mysql", "mariadb", "h2" -> onDuplicateKeyUpdate(transaction, updateValues)
+            "postgresql" -> {
+                if (index) {
+                    append(" ON CONFLICT ON CONSTRAINT $indexName")
+                } else {
+                    append(" ON CONFLICT($indexName)")
                 }
+
+                doUpdateSet(transaction, updateValues)
+            }
+            "sqlite" -> {
+                append(" ON CONFLICT(")
+
+                append(indexColumns.joinToString(",") { '"' + it.name + '"' })
+
+                append(")")
+                doUpdateSet(transaction, updateValues)
+            }
+            else -> throw UnsupportedOperationException("Unsupported SQL dialect: $dialect")
         }
+
+        append(upsert)
+    }
+
+    private fun doUpdateSet(transaction: Transaction, updateValues: Map<Column<*>, Any?>): String = buildString {
+        append(" DO UPDATE SET ")
+
+        updateValues.entries
+            .filter { it.key !in indexColumns }
+            .joinTo(this) { (column, value) ->
+                when (value) {
+                    is Expression<*> -> {
+                        val queryBuilder = QueryBuilder(true)
+                        value.toQueryBuilder(queryBuilder)
+                        "${transaction.identity(column)}=${queryBuilder}"
+                    }
+                    else -> "${transaction.identity(column)}=EXCLUDED.${transaction.identity(column)}"
+                }
+            }
+    }
+
+    private fun onDuplicateKeyUpdate(transaction: Transaction, updateValues: Map<Column<*>, Any?>): String = buildString {
+        append(" ON DUPLICATE KEY UPDATE ")
+
+        updateValues.entries
+            .filter { it.key !in indexColumns }
+            .joinTo(this) { (column, value) ->
+                when (value) {
+                    is Expression<*> -> {
+                        val queryBuilder = QueryBuilder(true)
+                        value.toQueryBuilder(queryBuilder)
+                        "${transaction.identity(column)}=${queryBuilder}"
+                    }
+                    else -> "${transaction.identity(column)}=VALUES(${transaction.identity(column)})"
+                }
+            }
     }
 
 }

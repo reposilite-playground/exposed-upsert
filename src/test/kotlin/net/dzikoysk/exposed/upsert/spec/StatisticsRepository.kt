@@ -52,7 +52,7 @@ internal class StatisticsRepository {
         transaction {
             addLogger(StdOutSqlLogger)
 
-            StatisticsTable.upsert(StatisticsTable.id,
+            StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
                 bodyInsert = {
                     it[this.type] = record.type
                     it[this.value] = record.value
