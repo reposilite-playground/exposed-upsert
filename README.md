@@ -4,7 +4,7 @@ Project bases on various solutions provided by community in the official _["Expo
 After 4 years, maintainers still didn't provide a solution, so here's a straightforward alternative.
 
 * Implements all dialects that support native upsert possibilities 
-* Tested against real databased through dedicated Docker containers provided by [Testcontainers](https://www.testcontainers.org/)
+* Tested against real databases through dedicated Docker containers provided by [Testcontainers](https://www.testcontainers.org/)
 * Licensed to public domain, you can do whatever you want with sources in this repository
 
 ### Coverage
