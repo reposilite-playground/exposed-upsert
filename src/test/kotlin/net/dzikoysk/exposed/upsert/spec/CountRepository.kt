@@ -25,42 +25,42 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-package net.dzikoysk.exposed.upsert
+package net.dzikoysk.exposed.upsert.spec
 
-import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
-import org.jetbrains.exposed.sql.Database
-import org.junit.jupiter.api.BeforeEach
-import org.testcontainers.containers.MySQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import net.dzikoysk.exposed.upsert.upsert
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
-@Testcontainers
-internal class MySQLUpsertTest : UpsertSpecification() {
+internal class CountRepository {
 
-    private class SpecifiedMySQLContainer(image: String) : MySQLContainer<SpecifiedMySQLContainer>(DockerImageName.parse(image))
-
-    companion object {
-        @Container
-        private val MYSQL_CONTAINER = SpecifiedMySQLContainer("mysql:8.0.25")
+    internal fun createSchema() {
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(CountTable)
+        }
     }
 
-    @BeforeEach
-    fun connect() {
-        println(MYSQL_CONTAINER.jdbcUrl)
-        Database.connect(MYSQL_CONTAINER.jdbcUrl, driver = "com.mysql.cj.jdbc.Driver", user = "test", password = "test")
-    }
+    internal fun upsertCount(id: Int, count: Int): Int =
+        transaction {
+            CountTable.upsert(CountTable.id,
+                insertBody = {
+                    it[CountTable.id] = id
+                    it[CountTable.count] = count
+                },
+                updateBody = {
+                    with(SqlExpressionBuilder) {
+                        it.update(CountTable.count, CountTable.count + count)
+                    }
+                }
+            )
 
-    @Test
-    fun `should launch database`() {
-       assertTrue { MYSQL_CONTAINER.isRunning }
-    }
-
-    @Test
-    fun `should run upsert spec`() {
-        super.shouldUpsertData()
-    }
+            CountTable.select { CountTable.id eq id }
+                .first()
+                .let { it[CountTable.count] }
+        }
 
 }

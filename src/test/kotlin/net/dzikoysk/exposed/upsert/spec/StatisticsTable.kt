@@ -27,6 +27,8 @@
 
 package net.dzikoysk.exposed.upsert.spec
 
+import net.dzikoysk.exposed.shared.IdentifiableEntity
+import net.dzikoysk.exposed.shared.UNINITIALIZED_ENTITY_ID
 import net.dzikoysk.exposed.upsert.withIndex
 import net.dzikoysk.exposed.upsert.withUnique
 import org.jetbrains.exposed.dao.id.IntIdTable
@@ -50,11 +52,11 @@ internal object StatisticsTable : IntIdTable("statistics") {
    * Count to upsert
  */
 internal data class Record(
-    val id: Long = -1,
+    override val id: Int = UNINITIALIZED_ENTITY_ID,
     val httpMethod: String,
     val uri: String,
     val count: Long
-) {
+) : IdentifiableEntity {
 
     override fun toString() = "$id | $httpMethod | $uri | $count"
 

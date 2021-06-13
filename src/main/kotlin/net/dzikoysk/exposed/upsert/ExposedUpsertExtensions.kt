@@ -8,12 +8,12 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 typealias UpsertBody<T> = T.(InsertStatement<Number>) -> Unit
 
-fun <T : Table> T.upsert(conflictColumn: Column<*>? = null, conflictIndex: Index? = null, bodyInsert: UpsertBody<T>, bodyUpdate: UpsertBody<T>) {
+fun <T : Table> T.upsert(conflictColumn: Column<*>? = null, conflictIndex: Index? = null, insertBody: UpsertBody<T>, updateBody: UpsertBody<T>) {
     val updateStatement = UpsertInsertStatement<Number>(this)
-    bodyUpdate(this, updateStatement)
+    updateBody(this, updateStatement)
 
     UpsertStatement<Number>(this, conflictColumn, conflictIndex, updateStatement).apply {
-        bodyInsert(this)
+        insertBody(this)
         execute(TransactionManager.current())
     }
 }

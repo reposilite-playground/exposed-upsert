@@ -41,7 +41,7 @@ internal class H2WithMySQLDialectUpsertTest : UpsertSpecification() {
 
     @Test
     fun `should run upsert spec`() {
-        super.shouldUpsertRecordsByUniqueIndex()
+        super.shouldUpsertData()
     }
 
 }

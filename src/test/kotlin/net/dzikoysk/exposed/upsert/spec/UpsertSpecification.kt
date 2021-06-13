@@ -27,27 +27,49 @@
 
 package net.dzikoysk.exposed.upsert.spec
 
+import net.dzikoysk.exposed.shared.UNINITIALIZED_ENTITY_ID
 import kotlin.test.assertEquals
 
 internal open class UpsertSpecification {
 
+    private val countRepository = CountRepository()
     private val statisticsRepository = StatisticsRepository()
 
-    internal fun shouldUpsertRecordsByUniqueIndex() {
+    internal fun shouldUpsertData() {
+        shouldUpsertRecordsByUniqueIndex()
+        shouldUpsertValueByColumn()
+    }
+
+    private fun shouldUpsertValueByColumn() {
+        countRepository.createSchema()
+
+        // should create records
+        assertEquals(3, countRepository.upsertCount(1, 3))
+        assertEquals(3, countRepository.upsertCount(2, 3))
+
+        // should upsert records
+        assertEquals(6, countRepository.upsertCount(1, 3))
+        assertEquals(6, countRepository.upsertCount(2, 3))
+    }
+
+    private fun shouldUpsertRecordsByUniqueIndex() {
         statisticsRepository.createSchema()
 
-        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz", 3)).id)
-        assertEquals(2, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz/xyz", 30)).id)
-        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "POST", "/xyz/xyz", 300)).id)
+        // should create records and generate id
+        assertEquals(1, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "GET", "/xyz", 3)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "GET", "/xyz/xyz", 30)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "POST", "/xyz/xyz", 300)).id)
 
         statisticsRepository.findAll().forEach { println(it) }
 
-        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz", 1)).id)
-        assertEquals(2, statisticsRepository.upsertRecord(Record(2, "GET", "/xyz/xyz", 10)).id)
-        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "POST", "/xyz/xyz", 100)).id)
+        // should upsert records that match (httpMethod, uri) unique index
+        assertEquals(1, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "GET", "/xyz", 1)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "GET", "/xyz/xyz", 10)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(UNINITIALIZED_ENTITY_ID, "POST", "/xyz/xyz", 100)).id)
 
         statisticsRepository.findAll().forEach { println(it) }
 
+        // should upsert records by unique index with specified id
         assertEquals(4, statisticsRepository.upsertRecord(Record(1, "GET", "/xyz", 0)).count)
         assertEquals(40, statisticsRepository.upsertRecord(Record(2, "GET", "/xyz/xyz", 0)).count)
         assertEquals(400, statisticsRepository.upsertRecord(Record(3, "POST", "/xyz/xyz", 0)).count)

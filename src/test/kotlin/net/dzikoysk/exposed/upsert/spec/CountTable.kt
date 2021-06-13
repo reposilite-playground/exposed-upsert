@@ -25,42 +25,11 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-package net.dzikoysk.exposed.upsert
+package net.dzikoysk.exposed.upsert.spec
 
-import net.dzikoysk.exposed.upsert.spec.UpsertSpecification
-import org.jetbrains.exposed.sql.Database
-import org.junit.jupiter.api.BeforeEach
-import org.testcontainers.containers.MySQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Column
 
-@Testcontainers
-internal class MySQLUpsertTest : UpsertSpecification() {
-
-    private class SpecifiedMySQLContainer(image: String) : MySQLContainer<SpecifiedMySQLContainer>(DockerImageName.parse(image))
-
-    companion object {
-        @Container
-        private val MYSQL_CONTAINER = SpecifiedMySQLContainer("mysql:8.0.25")
-    }
-
-    @BeforeEach
-    fun connect() {
-        println(MYSQL_CONTAINER.jdbcUrl)
-        Database.connect(MYSQL_CONTAINER.jdbcUrl, driver = "com.mysql.cj.jdbc.Driver", user = "test", password = "test")
-    }
-
-    @Test
-    fun `should launch database`() {
-       assertTrue { MYSQL_CONTAINER.isRunning }
-    }
-
-    @Test
-    fun `should run upsert spec`() {
-        super.shouldUpsertData()
-    }
-
+internal object CountTable : IntIdTable("count") {
+    val count: Column<Int> = integer("count")
 }

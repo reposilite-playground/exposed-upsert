@@ -10,12 +10,15 @@ plugins {
     application
     jacoco
     `maven-publish`
-    id("net.linguica.maven-settings") version "0.5"
 }
 
 publishing {
     repositories {
         maven {
+            credentials {
+                username = property("mavenUser") as String
+                password = property("mavenPassword") as String
+            }
             name = "panda-repository"
             url = uri("https://repo.panda-lang.org/releases")
         }

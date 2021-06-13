@@ -53,12 +53,12 @@ internal class StatisticsRepository {
             addLogger(StdOutSqlLogger)
 
             StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
-                bodyInsert = {
+                insertBody = {
                     it[this.httpMethod] = record.httpMethod
                     it[this.uri] = record.uri
                     it[this.count] = record.count
                 },
-                bodyUpdate = {
+                updateBody = {
                     with(SqlExpressionBuilder) {
                         it.update(StatisticsTable.count, StatisticsTable.count + record.count)
                     }
@@ -82,7 +82,7 @@ internal class StatisticsRepository {
 
     private fun toRecord(row: ResultRow): Record =
         Record(
-            id = row[StatisticsTable.id].value.toLong(),
+            id = row[StatisticsTable.id].value,
             httpMethod = row[StatisticsTable.httpMethod],
             uri = row[StatisticsTable.uri],
             count = row[StatisticsTable.count]

@@ -49,7 +49,7 @@ internal class SQLiteUpsertTest : UpsertSpecification() {
 
     @Test
     fun `should run upsert spec`() {
-        super.shouldUpsertRecordsByUniqueIndex()
+        super.shouldUpsertData()
     }
 
 }

@@ -32,12 +32,12 @@ class StatisticsTable : Table("statistics") {
 }
 
 StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
-    bodyInsert = {
+    insertBody = {
         it[this.httpMethod] = record.httpMethod
         it[this.uri] = record.uri
         it[this.count] = record.count
     },
-    bodyUpdate = {
+    updateBody = {
         with(SqlExpressionBuilder) {
             it.update(StatisticsTable.count, StatisticsTable.count + record.count)
         }

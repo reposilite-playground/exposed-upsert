@@ -60,7 +60,7 @@ internal class PostgreSQLUpsertTest : UpsertSpecification() {
 
     @Test
     fun `should run upsert spec`() {
-        super.shouldUpsertRecordsByUniqueIndex()
+        super.shouldUpsertData()
     }
 
 }
