@@ -9,6 +9,22 @@ plugins {
     kotlin("jvm") version "1.5.0"
     application
     jacoco
+    `maven-publish`
+    id("net.linguica.maven-settings") version "0.5"
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "panda-repository"
+            url = uri("https://repo.panda-lang.org/releases")
+        }
+    }
+    publications {
+        create<MavenPublication>("library") {
+            from(components.getByName("java"))
+        }
+    }
 }
 
 jacoco {

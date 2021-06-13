@@ -54,8 +54,8 @@ internal class StatisticsRepository {
 
             StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
                 bodyInsert = {
-                    it[this.type] = record.type
-                    it[this.value] = record.value
+                    it[this.httpMethod] = record.httpMethod
+                    it[this.uri] = record.uri
                     it[this.count] = record.count
                 },
                 bodyUpdate = {
@@ -65,7 +65,12 @@ internal class StatisticsRepository {
                 }
             )
 
-            StatisticsTable.select(Op.build { StatisticsTable.type eq record.type }.and { StatisticsTable.value eq record.value })
+            findByTypeAndValue(record.httpMethod, record.uri)
+        }
+
+    internal fun findByTypeAndValue(type: String, value: String): Record =
+        transaction {
+            StatisticsTable.select(Op.build { StatisticsTable.httpMethod eq type }.and { StatisticsTable.uri eq value })
                 .first()
                 .let { toRecord(it) }
         }
@@ -78,8 +83,8 @@ internal class StatisticsRepository {
     private fun toRecord(row: ResultRow): Record =
         Record(
             id = row[StatisticsTable.id].value.toLong(),
-            type = row[StatisticsTable.type],
-            value = row[StatisticsTable.value],
+            httpMethod = row[StatisticsTable.httpMethod],
+            uri = row[StatisticsTable.uri],
             count = row[StatisticsTable.count]
         )
 

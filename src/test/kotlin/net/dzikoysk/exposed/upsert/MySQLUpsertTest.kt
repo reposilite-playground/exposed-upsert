@@ -60,7 +60,7 @@ internal class MySQLUpsertTest : UpsertSpecification() {
 
     @Test
     fun `should run upsert spec`() {
-        super.shouldUpsertRecords()
+        super.shouldUpsertRecordsByUniqueIndex()
     }
 
 }

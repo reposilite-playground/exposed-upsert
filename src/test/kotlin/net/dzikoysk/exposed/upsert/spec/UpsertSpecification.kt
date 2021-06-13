@@ -33,24 +33,24 @@ internal open class UpsertSpecification {
 
     private val statisticsRepository = StatisticsRepository()
 
-    internal fun shouldUpsertRecords() {
+    internal fun shouldUpsertRecordsByUniqueIndex() {
         statisticsRepository.createSchema()
 
-        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "type", "xyz", 3)).id)
-        assertEquals(2, statisticsRepository.upsertRecord(Record(-1, "type", "xyz-xyz", 30)).id)
-        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "type-type", "xyz-xyz", 300)).id)
+        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz", 3)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz/xyz", 30)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "POST", "/xyz/xyz", 300)).id)
 
         statisticsRepository.findAll().forEach { println(it) }
 
-        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "type", "xyz", 1)).id)
-        assertEquals(2, statisticsRepository.upsertRecord(Record(2, "type", "xyz-xyz", 10)).id)
-        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "type-type", "xyz-xyz", 100)).id)
+        assertEquals(1, statisticsRepository.upsertRecord(Record(-1, "GET", "/xyz", 1)).id)
+        assertEquals(2, statisticsRepository.upsertRecord(Record(2, "GET", "/xyz/xyz", 10)).id)
+        assertEquals(3, statisticsRepository.upsertRecord(Record(-1, "POST", "/xyz/xyz", 100)).id)
 
         statisticsRepository.findAll().forEach { println(it) }
 
-        assertEquals(4, statisticsRepository.upsertRecord(Record(1, "type", "xyz", 0)).count)
-        assertEquals(40, statisticsRepository.upsertRecord(Record(2, "type", "xyz-xyz", 0)).count)
-        assertEquals(400, statisticsRepository.upsertRecord(Record(3, "type-type", "xyz-xyz", 0)).count)
+        assertEquals(4, statisticsRepository.upsertRecord(Record(1, "GET", "/xyz", 0)).count)
+        assertEquals(40, statisticsRepository.upsertRecord(Record(2, "GET", "/xyz/xyz", 0)).count)
+        assertEquals(400, statisticsRepository.upsertRecord(Record(3, "POST", "/xyz/xyz", 0)).count)
 
         statisticsRepository.findAll().forEach { println(it) }
     }

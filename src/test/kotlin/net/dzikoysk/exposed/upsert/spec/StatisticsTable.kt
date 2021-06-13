@@ -34,12 +34,12 @@ import org.jetbrains.exposed.sql.Column
 
 internal object StatisticsTable : IntIdTable("statistics") {
 
-    val type: Column<String> = varchar("type", 32)
-    val value: Column<String> = varchar("value", 512)
+    val httpMethod: Column<String> = varchar("http_method", 32)
+    val uri: Column<String> = varchar("uri", 512)
     val count: Column<Long> = long("count")
 
-    val typeIndex = withIndex("index_type", columns = arrayOf(type))
-    val uniqueTypeValue = withUnique("unique_type_value", type, value)
+    val typeIndex = withIndex("index_type", columns = arrayOf(httpMethod))
+    val uniqueTypeValue = withUnique("unique_http_method_to_uri", httpMethod, uri)
 
 }
 
@@ -51,11 +51,11 @@ internal object StatisticsTable : IntIdTable("statistics") {
  */
 internal data class Record(
     val id: Long = -1,
-    val type: String,
-    val value: String,
+    val httpMethod: String,
+    val uri: String,
     val count: Long
 ) {
 
-    override fun toString() = "$id | $type | $value | $count"
+    override fun toString() = "$id | $httpMethod | $uri | $count"
 
 }
