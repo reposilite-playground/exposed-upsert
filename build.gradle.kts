@@ -73,9 +73,11 @@ tasks.test {
 
 tasks.jacocoTestReport {
     reports {
-        html.isEnabled = true
-        xml.isEnabled = false
+        html.isEnabled = false
         csv.isEnabled = false
+
+        xml.isEnabled = true
+        xml.destination = file("$buildDir/reports/jacoco/report.xml")
     }
 
     finalizedBy("jacocoTestCoverageVerification")
