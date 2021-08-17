@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dzikoysk:exposed-upsert:1.0.0'
+    implementation 'net.dzikoysk:exposed-upsert:1.0.1'
 }
 ```
 

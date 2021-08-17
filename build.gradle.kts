@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.*
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 group = "net.dzikoysk"
-version = "1.0.0"
+version = "1.0.1"
 
 plugins {
     kotlin("jvm") version "1.5.0"
