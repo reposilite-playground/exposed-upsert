@@ -28,6 +28,8 @@
 package net.dzikoysk.exposed.upsert.spec
 
 import net.dzikoysk.exposed.upsert.upsert
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -37,6 +39,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class CountRepository {
 
+    internal object CountTable : IntIdTable("count") {
+        val count: Column<Int> = integer("count")
+        val state: Column<String> = text("state")
+    }
+
     internal fun createSchema() {
         transaction {
             addLogger(StdOutSqlLogger)
@@ -44,23 +51,31 @@ internal class CountRepository {
         }
     }
 
-    internal fun upsertCount(id: Int, count: Int): Int =
+    internal fun upsertCount(id: Int, count: Int): Pair<Int, String> =
         transaction {
             CountTable.upsert(CountTable.id,
                 insertBody = {
                     it[CountTable.id] = id
                     it[CountTable.count] = count
+                    it[CountTable.state] = "inserted"
                 },
                 updateBody = {
                     with(SqlExpressionBuilder) {
                         it.update(CountTable.count, CountTable.count + count)
                     }
+
+                    it[CountTable.state] = "updated"
                 }
             )
 
             CountTable.select { CountTable.id eq id }
                 .first()
-                .let { it[CountTable.count] }
+                .let {
+                    Pair(
+                        it[CountTable.count],
+                        it[CountTable.state]
+                    )
+                }
         }
 
 }

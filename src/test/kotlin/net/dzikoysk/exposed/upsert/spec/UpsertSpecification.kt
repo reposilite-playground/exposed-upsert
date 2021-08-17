@@ -28,6 +28,7 @@
 package net.dzikoysk.exposed.upsert.spec
 
 import net.dzikoysk.exposed.shared.UNINITIALIZED_ENTITY_ID
+import net.dzikoysk.exposed.upsert.spec.StatisticsRepository.Record
 import kotlin.test.assertEquals
 
 internal open class UpsertSpecification {
@@ -36,20 +37,20 @@ internal open class UpsertSpecification {
     private val statisticsRepository = StatisticsRepository()
 
     internal fun shouldUpsertData() {
-        shouldUpsertRecordsByUniqueIndex()
         shouldUpsertValueByColumn()
+        shouldUpsertRecordsByUniqueIndex()
     }
 
     private fun shouldUpsertValueByColumn() {
         countRepository.createSchema()
 
         // should create records
-        assertEquals(3, countRepository.upsertCount(1, 3))
-        assertEquals(3, countRepository.upsertCount(2, 3))
+        assertEquals(Pair(3, "inserted"), countRepository.upsertCount(1, 3))
+        assertEquals(Pair(3, "inserted"), countRepository.upsertCount(2, 3))
 
         // should upsert records
-        assertEquals(6, countRepository.upsertCount(1, 3))
-        assertEquals(6, countRepository.upsertCount(2, 3))
+        assertEquals(Pair(6, "updated"), countRepository.upsertCount(1, 3))
+        assertEquals(Pair(6, "updated"), countRepository.upsertCount(2, 3))
     }
 
     private fun shouldUpsertRecordsByUniqueIndex() {

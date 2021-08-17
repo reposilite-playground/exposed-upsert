@@ -40,10 +40,13 @@ internal class UpsertStatement<Key : Any>(
     override fun arguments(): List<List<Pair<IColumnType, Any?>>> {
         val updateArgs = updateStatement.arguments()
 
-        return super.arguments().mapIndexed { index, iterable ->
+        val result = super.arguments().mapIndexed { index, iterable ->
             val list = iterable.toList()
             list + (updateArgs.getOrNull(index) ?: return@mapIndexed list)
         }
+
+        println(result)
+        return result
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -93,7 +96,7 @@ internal class UpsertStatement<Key : Any>(
                         value.toQueryBuilder(queryBuilder)
                         "${transaction.identity(column)}=${queryBuilder}"
                     }
-                    else -> "${transaction.identity(column)}=EXCLUDED.${transaction.identity(column)}"
+                    else -> "${transaction.identity(column)}=?"
                 }
             }
     }
@@ -110,7 +113,7 @@ internal class UpsertStatement<Key : Any>(
                         value.toQueryBuilder(queryBuilder)
                         "${transaction.identity(column)}=${queryBuilder}"
                     }
-                    else -> "${transaction.identity(column)}=VALUES(${transaction.identity(column)})"
+                    else -> "${transaction.identity(column)}=?"
                 }
             }
     }

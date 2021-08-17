@@ -27,7 +27,13 @@
 
 package net.dzikoysk.exposed.upsert.spec
 
+import net.dzikoysk.exposed.shared.IdentifiableEntity
+import net.dzikoysk.exposed.shared.UNINITIALIZED_ENTITY_ID
 import net.dzikoysk.exposed.upsert.upsert
+import net.dzikoysk.exposed.upsert.withIndex
+import net.dzikoysk.exposed.upsert.withUnique
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -40,6 +46,34 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class StatisticsRepository {
+
+    internal object StatisticsTable : IntIdTable("statistics") {
+
+        val httpMethod: Column<String> = varchar("http_method", 32)
+        val uri: Column<String> = varchar("uri", 512)
+        val count: Column<Long> = long("count")
+
+        val typeIndex = withIndex("index_type", columns = arrayOf(httpMethod))
+        val uniqueTypeValue = withUnique("unique_http_method_to_uri", httpMethod, uri)
+
+    }
+
+    /*
+       Entity wit:h
+       * Primary key on 'id'
+       * Unique index on ('type', 'value') pair
+       * Count to upsert
+     */
+    internal data class Record(
+        override val id: Int = UNINITIALIZED_ENTITY_ID,
+        val httpMethod: String,
+        val uri: String,
+        val count: Long
+    ) : IdentifiableEntity {
+
+        override fun toString() = "$id | $httpMethod | $uri | $count"
+
+    }
 
     internal fun createSchema() {
         transaction {
