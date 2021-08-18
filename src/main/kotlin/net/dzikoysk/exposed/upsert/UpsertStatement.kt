@@ -36,7 +36,7 @@ internal class UpsertStatement<Key : Any>(
         }
     }
 
-    // Merge arguments from INSERT + UPDATE statements
+    // Merge arguments from INSERT + UPDATE statements in sublist
     override fun arguments(): List<List<Pair<IColumnType, Any?>>> {
         val updateArgs = updateStatement.arguments()
 
@@ -45,7 +45,6 @@ internal class UpsertStatement<Key : Any>(
             list + (updateArgs.getOrNull(index) ?: return@mapIndexed list)
         }
 
-        println(result)
         return result
     }
 
