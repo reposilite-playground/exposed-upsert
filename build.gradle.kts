@@ -3,10 +3,10 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.*
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 group = "net.dzikoysk"
-version = "1.0.2"
+version = "1.0.3"
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.21"
     application
     jacoco
     `maven-publish`
@@ -39,17 +39,17 @@ repositories {
 }
 
 dependencies {
-    val exposed = "0.32.1"
+    val exposed = "0.33.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposed")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed")
 
-    testImplementation("com.h2database:h2:1.4.199")
-    testImplementation("org.xerial:sqlite-jdbc:3.34.0")
+    testImplementation("com.h2database:h2:1.4.199") // 1.4.200 is broken
+    testImplementation("org.xerial:sqlite-jdbc:3.36.0.2")
     testImplementation("mysql:mysql-connector-java:8.0.25")
     testImplementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
-    testImplementation("org.postgresql:postgresql:42.2.21")
+    testImplementation("org.postgresql:postgresql:42.2.23.jre7")
 
-    val testcontainers = "1.15.3"
+    val testcontainers = "1.16.0"
     testImplementation("org.testcontainers:postgresql:$testcontainers")
     testImplementation("org.testcontainers:oracle-xe:$testcontainers")
     testImplementation("org.testcontainers:mariadb:$testcontainers")
@@ -57,15 +57,14 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testcontainers")
     testImplementation("org.testcontainers:junit-jupiter:$testcontainers")
 
-    testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.5.21")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
 
-    val logback = "1.2.3"
+    val logback = "1.2.5"
     testImplementation("ch.qos.logback:logback-core:$logback")
     testImplementation("ch.qos.logback:logback-classic:$logback")
 }
-
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
@@ -97,6 +96,10 @@ tasks.jacocoTestReport {
 
         xml.isEnabled = true
         xml.destination = file("$buildDir/reports/jacoco/report.xml")
+    }
+
+    onlyIf {
+        true
     }
 
     finalizedBy("jacocoTestCoverageVerification")
