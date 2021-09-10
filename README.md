@@ -47,6 +47,7 @@ StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
 
 **Notes**
 * Remember to keep the same order of fields in insert & upsert body
+* Default values are not supported ([GH-3](https://github.com/reposilite-playground/exposed-upsert/issues/3))
 * Upsert functionality between _(MySQL, MariaDB, H2 with MySQL dialect)_ and _(PostgreSQL, SQLite)_ are slightly different.
   To keep the compatibility between these databases, you should always use only one condition of uniqueness (unique column OR unique index).
   MySQL based dialects may handle multiple queries due to the better support provided by generic `ON DUPLICATE KEY` query. 
