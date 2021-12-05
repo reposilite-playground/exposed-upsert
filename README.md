@@ -70,7 +70,7 @@ dependencies {
 
 You can find all available versions in the repository:
 
-* [Repository - Artifact net.dzikoysk:exposed-upsert](https://repo.panda-lang.org/net/dzikoysk/exposed-upsert)
+* [Repository - Artifact net.dzikoysk:exposed-upsert](https://repo.panda-lang.org/#/releases/net/dzikoysk/exposed-upsert)
 
 ### Who's using
 * [Reposilite](https://github.com/dzikoysk/reposilite)
