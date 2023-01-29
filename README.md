@@ -1,4 +1,4 @@
-# Exposed Upsert [![CI](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml/badge.svg)](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml) [![codecov](https://codecov.io/gh/dzikoysk/exposed-upsert/branch/main/graph/badge.svg?token=dIBANIssGf)](https://codecov.io/gh/dzikoysk/exposed-upsert)
+# Exposed Upsert [![CI](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml/badge.svg)](https://github.com/dzikoysk/exposed-upsert/actions/workflows/gradle.yml) [![codecov](https://codecov.io/gh/dzikoysk/exposed-upsert/branch/main/graph/badge.svg?token=dIBANIssGf)](https://codecov.io/gh/dzikoysk/exposed-upsert) ![Maven Central](https://img.shields.io/maven-central/v/net.dzikoysk/exposed-upsert)
 Upsert DSL extension for Exposed, Kotlin SQL framework.
 Project bases on various solutions provided by community in the official _["Exposed: Support upsert functionality"](https://github.com/JetBrains/Exposed/issues/167)_ feature request.
 After 4 years, maintainers still didn't provide a solution, so here's a straightforward alternative.
@@ -56,13 +56,9 @@ StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
 
 #### Gradle
 
-```groovy
-repositories {
-    maven { url 'https://repo.panda-lang.org/releases' }
-}
-
+```kotlin
 dependencies {
-    implementation 'net.dzikoysk:exposed-upsert:1.0.3'
+    implementation("net.dzikoysk:exposed-upsert:1.1.0")
 }
 ```
 
