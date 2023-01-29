@@ -27,8 +27,14 @@
 
 package net.dzikoysk.exposed.shared
 
+/**
+ * Represents an uninitialized entity ID.
+ */
 const val UNINITIALIZED_ENTITY_ID: Int = -1
 
+/**
+ * Represents an entity that has an ID.
+ */
 interface IdentifiableEntity {
     val id: Int
 }

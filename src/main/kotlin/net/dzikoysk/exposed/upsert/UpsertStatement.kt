@@ -9,6 +9,9 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.statements.InsertStatement
 
+/**
+ * Upsert statement for Exposed.
+ */
 internal class UpsertStatement<Key : Any>(
     table: Table,
     conflictColumn: Column<*>? = null,
