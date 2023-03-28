@@ -51,7 +51,7 @@ internal class UpsertStatement<Key : Any>(
         return result
     }
 
-    @Suppress("UNCHECKED_CAST")
+    // @Suppress("UNCHECKED_CAST")
     override fun prepareSQL(transaction: Transaction) = buildString {
         append(super.prepareSQL(transaction))
 
@@ -88,26 +88,17 @@ internal class UpsertStatement<Key : Any>(
 
     private fun doUpdateSet(transaction: Transaction, updateValues: Map<Column<*>, Any?>): String = buildString {
         append(" DO UPDATE SET ")
-
-        updateValues.entries
-            .filter { it.key !in indexColumns }
-            .joinTo(this) { (column, value) ->
-                when (value) {
-                    is Expression<*> -> {
-                        val queryBuilder = QueryBuilder(true)
-                        value.toQueryBuilder(queryBuilder)
-                        "${transaction.identity(column)}=${queryBuilder}"
-                    }
-                    else -> "${transaction.identity(column)}=?"
-                }
-            }
+        append(appendUpdateSet(transaction, updateValues))
     }
 
     private fun onDuplicateKeyUpdate(transaction: Transaction, updateValues: Map<Column<*>, Any?>): String = buildString {
         append(" ON DUPLICATE KEY UPDATE ")
-
+        append(appendUpdateSet(transaction, updateValues))
+    }
+    private fun appendUpdateSet(transaction: Transaction, updateValues: Map<Column<*>, Any?>): String = buildString {
         updateValues.entries
             .filter { it.key !in indexColumns }
+            .sortedBy { it.key }
             .joinTo(this) { (column, value) ->
                 when (value) {
                     is Expression<*> -> {
