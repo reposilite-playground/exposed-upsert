@@ -29,6 +29,9 @@ package net.dzikoysk.exposed.upsert.spec
 
 import net.dzikoysk.exposed.shared.UNINITIALIZED_ENTITY_ID
 import net.dzikoysk.exposed.upsert.spec.StatisticsRepository.Record
+import net.dzikoysk.exposed.upsert.spec.StatisticsRepository.StatisticsTable
+import net.dzikoysk.exposed.upsert.upsert
+import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.test.assertEquals
 
 internal open class UpsertSpecification {
@@ -76,6 +79,32 @@ internal open class UpsertSpecification {
         assertEquals(400, statisticsRepository.upsertRecord(Record(3, "POST", "/xyz/xyz", 0)).count)
 
         statisticsRepository.findAll().forEach { println(it) }
-    }
 
+        // should reset count and change URI
+        val records = statisticsRepository.findAll()
+        if (!records.isEmpty()) {
+            for (record in records) {
+                val value = transaction {
+                    StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
+                        insertBody = {
+                            // this is technically irrelevant
+                            // it[this.id] = record.id
+                            it[this.httpMethod] = record.httpMethod
+                            it[this.uri] = record.uri
+                            it[this.count] = record.count
+                            it[this.lastUpdated] = record.lastUpdated
+                        },
+                        updateBody = {
+                            // intentionally ordered in reverse
+                            it[this.lastUpdated] = record.lastUpdated + 100 // something predictable
+                            it[this.count] = 1
+                        }
+                    )
+                    statisticsRepository.findByTypeAndValue(record.httpMethod, record.uri)
+                }
+                assertEquals(record.lastUpdated + 100, value.lastUpdated)
+                assertEquals(1, value.count)
+            }
+        }
+    }
 }

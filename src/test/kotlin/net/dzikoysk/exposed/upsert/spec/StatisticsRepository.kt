@@ -52,6 +52,7 @@ internal class StatisticsRepository {
         val httpMethod: Column<String> = varchar("http_method", 32)
         val uri: Column<String> = varchar("uri", 512)
         val count: Column<Long> = long("count")
+        val lastUpdated: Column<Long> = long("last_updated") // you would probably use DateTime for this but this is easier
 
         val typeIndex = withIndex("index_type", columns = arrayOf(httpMethod))
         val uniqueTypeValue = withUnique("unique_http_method_to_uri", httpMethod, uri)
@@ -68,7 +69,8 @@ internal class StatisticsRepository {
         override val id: Int = UNINITIALIZED_ENTITY_ID,
         val httpMethod: String,
         val uri: String,
-        val count: Long
+        val count: Long,
+        val lastUpdated: Long = 0
     ) : IdentifiableEntity {
 
         override fun toString() = "$id | $httpMethod | $uri | $count"
@@ -91,6 +93,7 @@ internal class StatisticsRepository {
                     it[this.httpMethod] = record.httpMethod
                     it[this.uri] = record.uri
                     it[this.count] = record.count
+                    it[this.lastUpdated] = record.lastUpdated
                 },
                 updateBody = {
                     with(SqlExpressionBuilder) {
@@ -119,7 +122,8 @@ internal class StatisticsRepository {
             id = row[StatisticsTable.id].value,
             httpMethod = row[StatisticsTable.httpMethod],
             uri = row[StatisticsTable.uri],
-            count = row[StatisticsTable.count]
+            count = row[StatisticsTable.count],
+            lastUpdated = row[StatisticsTable.lastUpdated]
         )
 
 }
