@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.QueryBuilder
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.statements.InsertStatement
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 /**
  * Upsert statement for Exposed.
@@ -32,7 +33,7 @@ internal class UpsertStatement<Key : Any>(
             }
             conflictColumn != null -> {
                 index = false
-                indexName = conflictColumn.name
+                indexName = TransactionManager.current().db.identifierManager.quoteIdentifierWhenWrongCaseOrNecessary(conflictColumn.name)
                 indexColumns = listOf(conflictColumn)
             }
             else -> throw IllegalArgumentException()
