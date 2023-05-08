@@ -58,7 +58,7 @@ StatisticsTable.upsert(conflictIndex = StatisticsTable.uniqueTypeValue,
 
 ```kotlin
 dependencies {
-    implementation("net.dzikoysk:exposed-upsert:1.1.0")
+    implementation("net.dzikoysk:exposed-upsert:1.2.1")
 }
 ```
 

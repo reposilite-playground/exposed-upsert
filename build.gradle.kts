@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.*
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 group = "net.dzikoysk"
-version = "1.1.0"
+version = "1.2.1"
 description = "Exposed Upsert | Exposed extension for upsert operations"
 
 plugins {
