@@ -53,8 +53,8 @@ internal class UpsertStatement<Key : Any>(
     }
 
     // @Suppress("UNCHECKED_CAST")
-    override fun prepareSQL(transaction: Transaction) = buildString {
-        append(super.prepareSQL(transaction))
+    override fun prepareSQL(transaction: Transaction, prepared: Boolean) = buildString {
+        append(super.prepareSQL(transaction, prepared))
 
         val updateValues = updateStatement.builderValues
 
@@ -63,8 +63,8 @@ internal class UpsertStatement<Key : Any>(
         }
 
         val upsert = when (val dialect = transaction.db.vendor) {
-            "mysql", "mariadb", "h2" -> onDuplicateKeyUpdate(transaction, updateValues)
-            "postgresql" -> {
+            "MySQL", "MariaDB", "H2" -> onDuplicateKeyUpdate(transaction, updateValues)
+            "PostgreSQL" -> {
                 if (index) {
                     append(" ON CONFLICT ON CONSTRAINT $indexName")
                 } else {
@@ -73,7 +73,7 @@ internal class UpsertStatement<Key : Any>(
 
                 doUpdateSet(transaction, updateValues)
             }
-            "sqlite" -> {
+            "SQLite" -> {
                 append(" ON CONFLICT(")
 
                 append(indexColumns.joinToString(",") { '"' + it.name + '"' })

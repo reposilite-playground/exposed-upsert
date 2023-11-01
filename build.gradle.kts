@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.*
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 group = "net.dzikoysk"
-version = "1.2.1"
+version = "1.2.2"
 description = "Exposed Upsert | Exposed extension for upsert operations"
 
 plugins {
@@ -13,7 +13,7 @@ plugins {
     jacoco
     signing
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 publishing {
@@ -78,17 +78,15 @@ tasks.register("release") {
 }
 
 nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            username.set(getEnvOrProperty("SONATYPE_USER", "sonatypeUser"))
-            password.set(getEnvOrProperty("SONATYPE_PASSWORD", "sonatypePassword"))
-        }
+    repositories.sonatype {
+        nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+        username.set(getEnvOrProperty("SONATYPE_USER", "sonatypeUser"))
+        password.set(getEnvOrProperty("SONATYPE_PASSWORD", "sonatypePassword"))
     }
 }
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.11"
 }
 
 repositories {
@@ -96,17 +94,17 @@ repositories {
 }
 
 dependencies {
-    val exposed = "0.41.1"
+    val exposed = "0.44.1"
     implementation("org.jetbrains.exposed:exposed-core:$exposed")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed")
 
-    testImplementation("com.h2database:h2:2.1.214")
-    testImplementation("org.xerial:sqlite-jdbc:3.36.0.2")
-    testImplementation("mysql:mysql-connector-java:8.0.28")
-    testImplementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
-    testImplementation("org.postgresql:postgresql:42.2.27")
+    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("org.xerial:sqlite-jdbc:3.43.2.2")
+    testImplementation("mysql:mysql-connector-java:8.0.33")
+    testImplementation("org.mariadb.jdbc:mariadb-java-client:3.2.0")
+    testImplementation("org.postgresql:postgresql:42.6.0")
 
-    val testcontainers = "1.16.0"
+    val testcontainers = "1.19.1"
     testImplementation("org.testcontainers:postgresql:$testcontainers")
     testImplementation("org.testcontainers:oracle-xe:$testcontainers")
     testImplementation("org.testcontainers:mariadb:$testcontainers")
@@ -114,23 +112,21 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testcontainers")
     testImplementation("org.testcontainers:junit-jupiter:$testcontainers")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.5.21")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.8.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 
-    val logback = "1.2.9"
+    val logback = "1.4.11"
     testImplementation("ch.qos.logback:logback-core:$logback")
     testImplementation("ch.qos.logback:logback-classic:$logback")
 }
 
 java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 tasks.withType<KotlinCompile> {
